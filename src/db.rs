@@ -10,6 +10,8 @@ use std::collections::hash_map::Entry::{Occupied, Vacant};
 use std::collections::hash_map::Iter;
 use std::io::Read;
 use std::str;
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
+use chrono::DateTime;
 use toml;
 
 /// A collection of security advisories, indexed both by ID and crate
@@ -17,6 +19,7 @@ use toml;
 pub struct AdvisoryDatabase {
     advisories: HashMap<String, Advisory>,
     crates: HashMap<String, Vec<String>>,
+    last_maintained: Option<SystemTime>,
 }
 
 impl AdvisoryDatabase {
@@ -44,13 +47,15 @@ impl AdvisoryDatabase {
     pub fn from_toml(data: &str) -> Result<Self> {
         let db_toml = data.parse::<toml::Value>().or(Err(Error::Parse))?;
 
-        let advisories_toml = match db_toml {
+        let db_table = match db_toml {
             toml::Value::Table(ref table) => {
-                match *table.get("advisory").ok_or(Error::MissingAttribute)? {
-                    toml::Value::Array(ref arr) => arr,
-                    _ => return Err(Error::InvalidAttribute),
-                }
+                table
             }
+            _ => return Err(Error::InvalidAttribute),
+        };
+
+        let advisories_toml = match *db_table.get("advisory").ok_or(Error::MissingAttribute)? {
+            toml::Value::Array(ref arr) => arr,
             _ => return Err(Error::InvalidAttribute),
         };
 
@@ -72,7 +77,30 @@ impl AdvisoryDatabase {
             advisories.insert(advisory.id.clone(), advisory);
         }
 
+        let meta_toml = match db_table.get("meta") {
+            Some(toml::Value::Table(ref tbl)) => Some(tbl),
+            _ => None,
+        };
+
+        let last_maintained = meta_toml
+            .and_then(|t| t.get("last_maintained"))
+            .and_then(|v| toml::Value::as_datetime(v))
+            .map(toml::value::Datetime::to_string)
+            .and_then(|s| DateTime::parse_from_rfc3339(&s).ok())
+            .and_then(|d| {
+                let secs = d.timestamp();
+                let subsec = d.timestamp_subsec_nanos();
+
+                if secs < 0 {
+                    None
+                } else {
+                    Some(Duration::new(secs as u64, subsec))
+                }
+            })
+            .map(|d| UNIX_EPOCH + d);
+
         Ok(AdvisoryDatabase {
+            last_maintained: last_maintained,
             advisories: advisories,
             crates: crates,
         })
@@ -112,18 +140,27 @@ impl AdvisoryDatabase {
     pub fn iter(&self) -> Iter<String, Advisory> {
         self.advisories.iter()
     }
+
+    /// The time this database was last checked for new advisories
+    pub fn last_maintained(&self) -> Option<SystemTime> {
+        self.last_maintained
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use db::AdvisoryDatabase;
     use semver::Version;
+    use std::time::{Duration, UNIX_EPOCH};
 
     pub const EXAMPLE_PACKAGE: &'static str = "heffalump";
     pub const EXAMPLE_VERSION: &'static str = "1.0.0";
     pub const EXAMPLE_ADVISORY: &'static str = "RUSTSEC-1234-0001";
 
     pub const EXAMPLE_ADVISORIES: &'static str = r#"
+        [meta]
+        last_maintained = 2018-07-19T18:23:16+00:00
+
         [[advisory]]
         id = "RUSTSEC-1234-0001"
         package = "heffalump"
@@ -149,5 +186,13 @@ mod tests {
         let advisories = db.find_vulns_for_crate(EXAMPLE_PACKAGE, &version);
 
         assert_eq!(advisories[0], db.find(EXAMPLE_ADVISORY).unwrap());
+    }
+
+    #[test]
+    fn test_last_maintained() {
+        let db = example_advisory_db();
+        let expected = Some(UNIX_EPOCH + Duration::from_secs(1532024596));
+
+        assert_eq!(db.last_maintained(), expected);
     }
 }
