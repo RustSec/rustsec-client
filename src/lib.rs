@@ -13,6 +13,7 @@ pub mod error;
 pub mod lockfile;
 mod util;
 
+extern crate chrono;
 extern crate reqwest;
 extern crate semver;
 extern crate toml;
