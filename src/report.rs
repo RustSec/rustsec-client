@@ -7,6 +7,7 @@ use crate::{
     advisory,
     database::{package_scope::PackageScope, Database, Query},
     lockfile::Lockfile,
+    package,
     platforms::target::{Arch, OS},
     vulnerability::Vulnerability,
     warning::Warning,
@@ -45,6 +46,7 @@ impl Report {
             .query_vulnerabilities(lockfile, &settings.query(), package_scope)
             .into_iter()
             .filter(|vuln| !settings.ignore.contains(&vuln.advisory.id))
+            .filter(|vuln| !settings.ignore_packages.contains(&vuln.package.name))
             .collect();
 
         Self {
@@ -71,6 +73,9 @@ pub struct Settings {
 
     /// List of advisory IDs to ignore
     pub ignore: Vec<advisory::Id>,
+
+    /// List of crates names to ignore
+    pub ignore_packages: Vec<package::Name>,
 
     /// Types of informational advisories to generate warnings for
     pub informational_warnings: Vec<advisory::Informational>,
@@ -183,8 +188,9 @@ pub fn find_warnings(db: &Database, lockfile: &Lockfile, settings: &Settings) ->
     // TODO(tarcieri): abstract `Cargo.lock` query logic between vulnerabilities/warnings
     for advisory_vuln in db.query_vulnerabilities(lockfile, &query, package_scope) {
         let advisory = &advisory_vuln.advisory;
+        let package = &advisory_vuln.package;
 
-        if settings.ignore.contains(&advisory.id) {
+        if settings.ignore.contains(&advisory.id) || settings.ignore_packages.contains(&package.name){
             continue;
         }
 
