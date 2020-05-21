@@ -248,9 +248,9 @@ checksum = "b3a71ab494c0b5b860bdc8407ae08978052417070c2ced38573a9157ad75b8ac"
 
 [[package]]
 name = "crates-index"
-version = "0.14.3"
+version = "0.14.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "185e829c8d4ce272df41f19bfc7bb1ef1f119cc451647527c0bce643d8913e25"
+checksum = "ff994eb4f48cb2e6968230ccb42e928e4bccfb161316a8231543f9cbaa117bfd"
 dependencies = [
  "error-chain",
  "git2",
