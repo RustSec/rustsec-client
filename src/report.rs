@@ -195,9 +195,8 @@ pub fn find_warnings(db: &Database, lockfile: &Lockfile, settings: &Settings) ->
             .any(|info| Some(info) == advisory.informational.as_ref())
         {
             let warning_kind = match advisory.informational.as_ref().unwrap() {
-                advisory::Informational::Notice | advisory::Informational::Unsound => {
-                    warning::Kind::Informational
-                }
+                advisory::Informational::Notice => warning::Kind::Informational,
+                advisory::Informational::Unsound => warning::Kind::Unsound,
                 advisory::Informational::Unmaintained => warning::Kind::Unmaintained,
                 advisory::Informational::Other(_) => continue,
             };
