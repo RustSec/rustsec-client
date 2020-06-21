@@ -15,9 +15,12 @@ pub enum Informational {
     /// Crate is unmaintained / abandoned
     Unmaintained,
 
-    /// Crate is not [sound].
+    /// Crate is not [sound], i.e., unsound.
+    ///
+    /// A crate is unsound if, using its public API from safe code, it is possible to cause [Undefind Behavior].
     ///
     /// [sound]: https://rust-lang.github.io/unsafe-code-guidelines/glossary.html#soundness-of-code--of-a-library
+    /// [Undefined Behavior]: https://doc.rust-lang.org/reference/behavior-considered-undefined.html
     Unsound,
 
     /// Other types of informational advisories: left open-ended to add
