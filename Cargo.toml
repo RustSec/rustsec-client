@@ -15,7 +15,7 @@ edition     = "2018"
 maintenance = { status = "actively-developed" }
 
 [dependencies]
-cargo-lock = { version = "4", default-features = false }
+cargo-lock = { version = "5", default-features = false }
 chrono = { version = "0.4", features = ["serde"] }
 crates-index = { version = "0.15.4", optional = true }
 cvss = { version = "1", features = ["serde"] }
