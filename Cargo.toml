@@ -24,7 +24,7 @@ home = { version = "0.5", optional = true }
 platforms = { version = "1", features = ["serde"] }
 semver = { version = "0.10", features = ["serde"] }
 serde = { version = "1", features = ["serde_derive"] }
-smol_str = "=0.1.16" # smol_str 0.1.17 requires Rust 1.46+
+smol_str = "=0.1.17" # smol_str 0.1.17 requires Rust 1.46+
 thiserror = "1"
 toml = "0.5"
 
