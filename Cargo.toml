@@ -22,7 +22,7 @@ cvss = { version = "1", features = ["serde"] }
 git2 = { version = "0.13", optional = true }
 home = { version = "0.5", optional = true }
 platforms = { version = "1", features = ["serde"] }
-semver = { version = "0.10", features = ["serde"] }
+semver = { version = "0.11", features = ["serde"] }
 serde = { version = "1", features = ["serde_derive"] }
 smol_str = "=0.1.16" # smol_str 0.1.17 requires Rust 1.46+
 thiserror = "1"
