@@ -1385,7 +1385,7 @@ dependencies = [
  "once_cell",
  "platforms",
  "semver 0.11.0",
- "semver-parser 0.10.0",
+ "semver-parser 0.10.1",
  "serde",
  "smol_str",
  "tempfile",
@@ -1448,7 +1448,7 @@ version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f301af10236f6df4160f7c3f04eec6dbc70ace82d23326abad5edee88801c6b6"
 dependencies = [
- "semver-parser 0.10.0",
+ "semver-parser 0.10.1",
  "serde",
 ]
 
@@ -1460,12 +1460,11 @@ checksum = "388a1df253eca08550bef6c72392cfe7c30914bf41df5269b68cbd6ff8f570a3"
 
 [[package]]
 name = "semver-parser"
-version = "0.10.0"
+version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0e012c6c5380fb91897ba7b9261a0f565e624e869d42fe1a1d03fa0d68a083d5"
+checksum = "42ef146c2ad5e5f4b037cd6ce2ebb775401729b19a82040c1beac9d36c7d1428"
 dependencies = [
  "pest",
- "pest_derive",
 ]
 
 [[package]]
