@@ -17,7 +17,7 @@ maintenance = { status = "actively-developed" }
 [dependencies]
 cargo-lock = { version = "6", default-features = false }
 chrono = { version = "0.4", features = ["serde"] }
-comrak = { version = "0.8", optional = true, default-features = false }
+comrak = { version = "0.9", optional = true, default-features = false }
 crates-index = { version = "0.16.2", optional = true }
 cvss = { version = "1", features = ["serde"] }
 fs-err = "2.5"
