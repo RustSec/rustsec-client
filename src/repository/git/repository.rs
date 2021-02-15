@@ -72,7 +72,8 @@ impl Repository {
             fs::remove_dir(&path)?;
         }
 
-        let git_config = git2::Config::new()?;
+        let mut git_config = git2::Config::new()?;
+        git_config.set_str("core.autocrlf", "false")?;
 
         with_authentication(url, &git_config, |f| {
             let mut callbacks = git2::RemoteCallbacks::new();
